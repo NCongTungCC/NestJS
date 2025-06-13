@@ -1,5 +1,12 @@
-import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  BaseEntity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
+import { Token } from 'src/modules/auth/entities/token.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -16,5 +23,12 @@ export class User extends BaseEntity {
 
   @Column()
   @IsNotEmpty()
+  role!: string;
+
+  @Column()
+  @IsNotEmpty()
   password!: string;
+
+  @OneToMany(() => Token, (token) => token.userId)
+  tokens!: Token[];
 }

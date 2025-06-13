@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { AuthenticationMiddleware } from './common/middlewares/authentication.middleware';
 
 @Module({
   imports: [
@@ -26,5 +27,6 @@ import { AuthModule } from './modules/auth/auth.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer.apply(AuthenticationMiddleware).forRoutes('/logout');
   }
 }

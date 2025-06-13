@@ -87,4 +87,19 @@ export class UserService {
       data: await query.getMany(),
     };
   }
+
+  async findUserById(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'User not found',
+      };
+    }
+    return {
+      code: HttpStatus.OK,
+      message: 'User retrieved successfully',
+      data: user,
+    };
+  }
 }

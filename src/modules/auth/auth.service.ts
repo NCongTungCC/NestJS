@@ -5,16 +5,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HttpStatus } from '@nestjs/common/enums/http-status.enum';
 import { SignUpDto } from './dto/SignUpDto';
+import { Token } from './entities/token.entity';
 import {
   comparePassword,
   hashPassword,
 } from '../../common/ultis/hashPassword.ulti';
+import { generateToken } from 'src/common/ultis/generateToken.ulti';
+import { SELF_DECLARED_DEPS_METADATA } from '@nestjs/common/constants';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
   ) {}
   async login(payload: LoginDto): Promise<any> {
     const user = await this.userRepository.findOne({
@@ -37,9 +42,16 @@ export class AuthService {
         message: 'Invalid credentials',
       };
     }
+    const accessToken = await generateToken(user);
+    await this.tokenRepository.save({
+      userId: user.id,
+      token: accessToken,
+      expiresAt: new Date(Date.now() + 3600000),
+    });
     return {
       code: HttpStatus.OK,
       message: 'Login successful',
+      accessToken: accessToken,
     };
   }
 
@@ -60,6 +72,14 @@ export class AuthService {
       code: HttpStatus.CREATED,
       message: 'User created successfully',
       data: newUser,
+    };
+  }
+
+  async logout(userId: number): Promise<any> {
+    await this.tokenRepository.delete({ userId: userId });
+    return {
+      code: HttpStatus.OK,
+      message: 'Logout successful',
     };
   }
 }
