@@ -1,4 +1,12 @@
-import { Controller, Delete, HttpStatus, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { Post, Res, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -9,28 +17,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
-    const users = await this.userService.createUser(createUserDto);
-    return res.status(HttpStatus.CREATED).json({
-      code: HttpStatus.CREATED,
-      message: 'User created successfully',
-      data: users,
-    });
+    const result = await this.userService.createUser(createUserDto);
+    return res.status(result.code).json(result);
   }
 
   @Delete(':id')
   async deleteUser(@Param('id') id: number, @Res() res: Response) {
-    const user = await this.userService.deleteUser(id);
-    if (!user) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        code: HttpStatus.NOT_FOUND,
-        message: 'User not found',
-      });
-    }
-    return res.status(HttpStatus.OK).json({
-      code: HttpStatus.OK,
-      message: 'User deleted successfully',
-      data: user,
-    });
+    const result = await this.userService.deleteUser(id);
+    return res.status(result.code).json(result);
   }
 
   @Put(':id')
@@ -39,17 +33,13 @@ export class UserController {
     @Body() updateUserDto: updateUserDto,
     @Res() res: Response,
   ) {
-    const user = await this.userService.updateUser(id, updateUserDto);
-    if (!user) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        code: HttpStatus.NOT_FOUND,
-        message: 'User not found',
-      });
-    }
-    return res.status(HttpStatus.OK).json({
-      code: HttpStatus.OK,
-      message: 'User updated successfully',
-      data: user,
-    });
+    const result = await this.userService.updateUser(id, updateUserDto);
+    return res.status(result.code).json(result);
+  }
+
+  @Get()
+  async findUser(@Res() res: Response, @Query() filter: string) {
+    const result = await this.userService.findUser(filter);
+    return res.status(result.code).json(result);
   }
 }
