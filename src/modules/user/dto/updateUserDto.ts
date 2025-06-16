@@ -1,10 +1,20 @@
-import { IsEmpty } from 'class-validator';
+import { IsEmpty, IsEnum, IsOptional } from 'class-validator';
+import { Gender, Role } from 'src/common/ultis/constants.ulti';
 
 export class updateUserDto {
-  name: string;
+  name?: string;
 
   @IsEmpty()
-  password: string;
+  password?: string;
+  email?: string;
 
-  email: string;
+  @IsEnum(Gender)
+  @IsOptional()
+  gender?: string;
+
+  @IsEnum(Role)
+  @IsOptional()
+  role?: string;
+
+  birthDate?: Date;
 }

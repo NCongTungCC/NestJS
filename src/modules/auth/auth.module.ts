@@ -4,6 +4,7 @@ import { User } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { Token } from './entities/token.entity';
+import { TokenCleanupService } from './tokenclean.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { Token } from './entities/token.entity';
     TypeOrmModule.forFeature([Token]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, TokenCleanupService],
 })
 export class AuthModule {}

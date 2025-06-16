@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
 import { Token } from 'src/modules/auth/entities/token.entity';
+import { Role, Gender } from '../../../common/ultis/constants.ulti';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -21,13 +22,21 @@ export class User extends BaseEntity {
   @IsNotEmpty()
   email!: string;
 
-  @Column()
+  @Column({ type: 'enum', enum: Role })
   @IsNotEmpty()
   role!: string;
 
   @Column()
   @IsNotEmpty()
   password!: string;
+
+  @Column({ type: 'enum', enum: Gender })
+  @IsNotEmpty()
+  gender!: string;
+
+  @Column()
+  @IsNotEmpty()
+  birthDate!: Date;
 
   @OneToMany(() => Token, (token) => token.userId)
   tokens!: Token[];

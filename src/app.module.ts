@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthenticationMiddleware } from './common/middlewares/authentication.middleware';
+import { UserController } from './modules/user/user.controller';
+import { RequestMethod } from '@nestjs/common/enums/request-method.enum';
 
 @Module({
   imports: [
@@ -27,6 +29,9 @@ import { AuthenticationMiddleware } from './common/middlewares/authentication.mi
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
-    consumer.apply(AuthenticationMiddleware).forRoutes('/logout');
+    consumer.apply(AuthenticationMiddleware).forRoutes(UserController, {
+      path: 'logout',
+      method: RequestMethod.GET,
+    });
   }
 }

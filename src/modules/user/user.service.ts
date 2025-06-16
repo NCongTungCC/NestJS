@@ -32,7 +32,6 @@ export class UserService {
       data: user,
     };
   }
-
   async deleteUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
@@ -66,16 +65,19 @@ export class UserService {
     };
   }
 
-  async findUser(filter: string) {
-    const query = await this.userRepository
+  async getUser(query: any, limit: number, offset: number) {
+    const querry = await this.userRepository
       .createQueryBuilder('user')
       .select(['user.id', 'user.name', 'user.email'])
+      .take(limit)
+      .skip(offset)
       .orderBy('user.id', 'DESC');
 
-    Object.entries(filter).forEach(([key, value]) => {
-      query.andWhere(`user.${key} LIKE :${key}`, { [key]: `%${value}%` });
+    Object.entries(query).forEach(([key, value]) => {
+      querry.andWhere(`user.${key} LIKE :${key}`, { [key]: `%${value}%` });
     });
-    if (!query) {
+    const users = await querry.getMany();
+    if (!users || users.length === 0) {
       return {
         code: HttpStatus.NOT_FOUND,
         message: 'No users found',
@@ -84,7 +86,7 @@ export class UserService {
     return {
       code: HttpStatus.OK,
       message: 'Users retrieved successfully',
-      data: await query.getMany(),
+      data: users,
     };
   }
 

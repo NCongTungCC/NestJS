@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { Token } from '../../modules/auth/entities/token.entity';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -9,18 +10,42 @@ declare module 'express-serve-static-core' {
 }
 @Injectable()
 export class AuthenticationMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  async use(req: Request, res: Response, next: NextFunction) {
     const { JWT_SECRET } = process.env;
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(' ')[1];
+
+    if (!accessToken) {
+      return res.status(401).json({
+        code: 401,
+        status: 'Error',
+        message: 'No access token provided',
+      });
     }
-    jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) {
-        return res.status(403).json({ message: 'Forbidden' });
+
+    try {
+      const user = jwt.verify(accessToken, JWT_SECRET);
+      req.user = user as any;
+
+      const tokenExists = await Token.findOne({
+        where: { token: accessToken },
+      });
+
+      if (!tokenExists) {
+        return res.status(401).json({
+          code: 401,
+          status: 'Error',
+          message: 'Token not found',
+        });
       }
-      req.user = user;
+
       next();
-    });
+    } catch (err) {
+      return res.status(403).json({
+        code: 403,
+        status: 'Error',
+        message: 'Invalid token',
+      });
+    }
   }
 }

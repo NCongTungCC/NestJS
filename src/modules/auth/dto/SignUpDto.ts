@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, Length } from 'class-validator';
+import { Gender } from 'src/common/ultis/constants.ulti';
 
 export class SignUpDto {
   @IsNotEmpty()
@@ -12,4 +13,11 @@ export class SignUpDto {
 
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: string;
+
+  @IsNotEmpty()
+  birthDate: Date;
 }

@@ -1,26 +1,39 @@
-import { Controller, Delete, Get, Param, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { Post, Res, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/createUserDto';
 import { updateUserDto } from './dto/updateUserDto';
+import { LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
+import { PromiseGuard } from 'src/common/guard/promise.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Post()
+  @UseGuards(PromiseGuard)
   async createUser(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const result = await this.userService.createUser(createUserDto);
     return res.status(result.code).json(result);
   }
 
   @Delete(':id')
+  @UseGuards(PromiseGuard)
   async deleteUser(@Param('id') id: number, @Res() res: Response) {
     const result = await this.userService.deleteUser(id);
     return res.status(result.code).json(result);
   }
 
   @Put(':id')
+  @UseGuards(PromiseGuard)
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: updateUserDto,
@@ -31,8 +44,16 @@ export class UserController {
   }
 
   @Get()
-  async findUser(@Res() res: Response, @Query() filter: string) {
-    const result = await this.userService.findUser(filter);
+  async getUser(@Res() res: Response, @Query() filter: any) {
+    const limit = filter?.limit || LIMIT;
+    const page = filter?.page || PAGE;
+    const offset = (page - 1) * limit;
+    const query = Object.fromEntries(
+      Object.entries(filter).filter(
+        ([key, value]) => key !== 'limit' && key !== 'page',
+      ),
+    );
+    const result = await this.userService.getUser(query, limit, offset);
     return res.status(result.code).json(result);
   }
 
