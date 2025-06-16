@@ -10,8 +10,8 @@ import {
 import { Post, Res, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/createUserDto';
-import { updateUserDto } from './dto/updateUserDto';
+import { CreateUserDto } from './dto/CreateUserDto';
+import { UpdateUserDto } from './dto/UpdateUserDto';
 import { LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
 import { PromiseGuard } from 'src/common/guard/promise.guard';
 
@@ -36,7 +36,7 @@ export class UserController {
   @UseGuards(PromiseGuard)
   async updateUser(
     @Param('id') id: number,
-    @Body() updateUserDto: updateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
     @Res() res: Response,
   ) {
     const result = await this.userService.updateUser(id, updateUserDto);
@@ -50,7 +50,7 @@ export class UserController {
     const offset = (page - 1) * limit;
     const query = Object.fromEntries(
       Object.entries(filter).filter(
-        ([key, value]) => key !== 'limit' && key !== 'page',
+        ([key, _]) => key !== 'limit' && key !== 'page',
       ),
     );
     const result = await this.userService.getUser(query, limit, offset);

@@ -13,13 +13,12 @@ export class AuthController {
     const result = await this.authService.login(loginDto);
     return res.status(result.code).json(result);
   }
-
   @Post('signup')
   async signup(
-    @Body() SignUpDto: SignUpDto,
+    @Body() signUpDto: SignUpDto,
     @Res() res: Response,
   ): Promise<any> {
-    const result = await this.authService.signup(SignUpDto);
+    const result = await this.authService.signup(signUpDto);
     return res.status(result.code).json(result);
   }
 

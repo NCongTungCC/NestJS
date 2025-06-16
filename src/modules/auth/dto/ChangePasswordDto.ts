@@ -1,5 +1,4 @@
 import { IsNotEmpty, Length } from 'class-validator';
-import { BadRequestException } from '@nestjs/common';
 
 export class ChangePasswordDto {
   @IsNotEmpty()

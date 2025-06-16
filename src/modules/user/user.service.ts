@@ -2,8 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/createUserDto';
-import { updateUserDto } from './dto/updateUserDto';
+import { CreateUserDto } from './dto/CreateUserDto';
+import { UpdateUserDto } from './dto/UpdateUserDto';
 import { hashPassword } from '../../common/ultis/hashPassword.ulti';
 
 @Injectable()
@@ -48,7 +48,7 @@ export class UserService {
     };
   }
 
-  async updateUser(id: number, payload: updateUserDto) {
+  async updateUser(id: number, payload: UpdateUserDto) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
       return {

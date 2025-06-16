@@ -1,7 +1,7 @@
 import { IsEmpty, IsEnum, IsOptional } from 'class-validator';
 import { Gender, Role } from 'src/common/ultis/constants.ulti';
 
-export class updateUserDto {
+export class UpdateUserDto {
   name?: string;
 
   @IsEmpty()

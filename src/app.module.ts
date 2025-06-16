@@ -7,11 +7,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AuthenticationMiddleware } from './common/middlewares/authentication.middleware';
 import { UserController } from './modules/user/user.controller';
 import { RequestMethod } from '@nestjs/common/enums/request-method.enum';
+import { BookModule } from './modules/book/book.model';
+import { BookController } from './modules/book/book.controller';
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
+    BookModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -29,9 +32,12 @@ import { RequestMethod } from '@nestjs/common/enums/request-method.enum';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
-    consumer.apply(AuthenticationMiddleware).forRoutes(UserController, {
-      path: 'logout',
-      method: RequestMethod.GET,
-    });
+    consumer
+      .apply(AuthenticationMiddleware)
+      .exclude({ path: 'books', method: RequestMethod.GET })
+      .forRoutes(UserController, BookController, {
+        path: 'logout',
+        method: RequestMethod.GET,
+      });
   }
 }
