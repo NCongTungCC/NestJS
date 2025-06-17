@@ -56,7 +56,7 @@ export class AuthService {
     };
   }
 
-  async signup(payload: SignUpDto): Promise<any> {
+  async checkEmail(payload: SignUpDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({
       where: { email: payload.email },
     });
@@ -66,6 +66,10 @@ export class AuthService {
         message: 'User already exists',
       };
     }
+    return true;
+  }
+
+  async signup(payload: SignUpDto): Promise<any> {
     const count = await this.userRepository.count();
     const role = count === 0 ? Role.ADMIN : Role.USER;
     payload.password = await hashPassword(payload.password);

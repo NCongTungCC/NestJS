@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/CreateUserDto';
 import { UpdateUserDto } from './dto/UpdateUserDto';
-import { LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
+import { ALLOWED_USER, LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
 import { PromiseGuard } from 'src/common/guard/promise.guard';
 
 @Controller('user')
@@ -33,7 +33,6 @@ export class UserController {
   }
 
   @Put(':id')
-  @UseGuards(PromiseGuard)
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -50,7 +49,7 @@ export class UserController {
     const offset = (page - 1) * limit;
     const query = Object.fromEntries(
       Object.entries(filter).filter(
-        ([key, _]) => key !== 'limit' && key !== 'page',
+        ([key, value]) => ALLOWED_USER.includes(key) && value !== undefined,
       ),
     );
     const result = await this.userService.getUser(query, limit, offset);

@@ -18,6 +18,10 @@ export class AuthController {
     @Body() signUpDto: SignUpDto,
     @Res() res: Response,
   ): Promise<any> {
+    const emailCheckResult = await this.authService.checkEmail(signUpDto);
+    if (emailCheckResult !== true) {
+      return res.status(emailCheckResult.code).json(emailCheckResult);
+    }
     const result = await this.authService.signup(signUpDto);
     return res.status(result.code).json(result);
   }

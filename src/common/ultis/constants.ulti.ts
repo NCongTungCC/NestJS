@@ -11,3 +11,6 @@ export const Gender = {
   MALE: 'male',
   FEMALE: 'female',
 };
+
+export const ALLOWED_BOOK = ['title', 'author', 'year'];
+export const ALLOWED_USER = ['name', 'email', 'role'];

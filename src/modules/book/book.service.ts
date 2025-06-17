@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Book } from './entities/book.entity';
 import { HttpStatus } from '@nestjs/common';
 import { CreateBookDto } from './dto/CreateBookDto';
+import { UpdateBookDto } from './dto/UpdateBookDto';
 
 @Injectable()
 export class BookService {
@@ -45,7 +46,7 @@ export class BookService {
     };
   }
 
-  async updateBook(id: number, payload: CreateBookDto) {
+  async updateBook(id: number, payload: UpdateBookDto) {
     const book = await this.bookRepository.findOne({ where: { id } });
     if (!book) {
       return {
@@ -58,6 +59,21 @@ export class BookService {
     return {
       code: HttpStatus.OK,
       message: 'Book updated successfully',
+      book,
+    };
+  }
+
+  async getBookById(id: number) {
+    const book = await this.bookRepository.findOne({ where: { id } });
+    if (!book) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Book not found',
+      };
+    }
+    return {
+      code: HttpStatus.OK,
+      message: 'Book retrieved successfully',
       book,
     };
   }
