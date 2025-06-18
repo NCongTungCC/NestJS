@@ -20,30 +20,26 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @Post()
   @UseGuards(PromiseGuard)
-  async createUser(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
-    const result = await this.userService.createUser(createUserDto);
-    return res.status(result.code).json(result);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return this.userService.createUser(createUserDto);
   }
 
   @Delete(':id')
   @UseGuards(PromiseGuard)
-  async deleteUser(@Param('id') id: number, @Res() res: Response) {
-    const result = await this.userService.deleteUser(id);
-    return res.status(result.code).json(result);
+  async deleteUser(@Param('id') id: number) {
+    return this.userService.deleteUser(id);
   }
 
   @Put(':id')
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
-    @Res() res: Response,
   ) {
-    const result = await this.userService.updateUser(id, updateUserDto);
-    return res.status(result.code).json(result);
+    return this.userService.updateUser(id, updateUserDto);
   }
 
   @Get()
-  async getUser(@Res() res: Response, @Query() filter: any) {
+  async getUser(@Query() filter: any) {
     const limit = filter?.limit || LIMIT;
     const page = filter?.page || PAGE;
     const offset = (page - 1) * limit;
@@ -52,13 +48,11 @@ export class UserController {
         ([key, value]) => ALLOWED_USER.includes(key) && value !== undefined,
       ),
     );
-    const result = await this.userService.getUser(query, limit, offset);
-    return res.status(result.code).json(result);
+    return this.userService.getUser(query, limit, offset);
   }
 
   @Get(':id')
-  async findUserById(@Param('id') id: number, @Res() res: Response) {
-    const result = await this.userService.findUserById(id);
-    return res.status(result.code).json(result);
+  async findUserById(@Param('id') id: number) {
+    return this.userService.findUserById(id);
   }
 }

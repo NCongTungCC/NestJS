@@ -7,7 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AuthenticationMiddleware } from './common/middlewares/authentication.middleware';
 import { UserController } from './modules/user/user.controller';
 import { RequestMethod } from '@nestjs/common/enums/request-method.enum';
-import { BookModule } from './modules/book/book.model';
+import { BookModule } from './modules/book/book.module';
 import { BookController } from './modules/book/book.controller';
 
 @Module({
