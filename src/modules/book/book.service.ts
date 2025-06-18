@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Book } from './entities/book.entity';
@@ -15,64 +19,47 @@ export class BookService {
     const book = await this.bookRepository.findOne({
       where: { title: payload.title },
     });
-    if (book) {
-      return {
-        code: HttpStatus.CONFLICT,
-        message: 'Book already exists',
-      };
-    }
+    if (book) throw new ConflictException('Book already exists');
     const newBook = this.bookRepository.create(payload);
     await this.bookRepository.save(newBook);
     return {
-      code: HttpStatus.CREATED,
+      statusCode: HttpStatus.CREATED,
       message: 'Book created successfully',
       book: newBook,
     };
   }
 
-  async deleteBook(id: number) {
+  async checkBook(id: number) {
     const book = await this.bookRepository.findOne({ where: { id } });
-    if (!book) {
-      return {
-        code: HttpStatus.NOT_FOUND,
-        message: 'Book not found',
-      };
-    }
+    if (!book) throw new NotFoundException('Book not found');
+    return book;
+  }
+
+  async deleteBook(id: number) {
+    const book = await this.checkBook(id);
     await this.bookRepository.remove(book);
     return {
-      code: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Book deleted successfully',
       book,
     };
   }
 
   async updateBook(id: number, payload: UpdateBookDto) {
-    const book = await this.bookRepository.findOne({ where: { id } });
-    if (!book) {
-      return {
-        code: HttpStatus.NOT_FOUND,
-        message: 'Book not found',
-      };
-    }
+    const book = await this.checkBook(id);
     Object.assign(book, payload);
     await this.bookRepository.save(book);
     return {
-      code: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Book updated successfully',
       book,
     };
   }
 
   async getBookById(id: number) {
-    const book = await this.bookRepository.findOne({ where: { id } });
-    if (!book) {
-      return {
-        code: HttpStatus.NOT_FOUND,
-        message: 'Book not found',
-      };
-    }
+    const book = await this.checkBook(id);
     return {
-      code: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Book retrieved successfully',
       book,
     };
@@ -91,14 +78,10 @@ export class BookService {
 
     const books = await query.getMany();
 
-    if (!books || books.length === 0) {
-      return {
-        code: HttpStatus.NOT_FOUND,
-        message: 'Book not found',
-      };
-    }
+    if (!books || books.length === 0)
+      throw new NotFoundException('No books found');
     return {
-      code: HttpStatus.OK,
+      statusCode: HttpStatus.OK,
       message: 'Book retrieved successfully',
       book: books,
     };

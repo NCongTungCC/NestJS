@@ -7,8 +7,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Post, Res, Body } from '@nestjs/common';
-import { Response } from 'express';
+import { Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/CreateUserDto';
 import { UpdateUserDto } from './dto/UpdateUserDto';
@@ -40,8 +39,8 @@ export class UserController {
 
   @Get()
   async getUser(@Query() filter: any) {
-    const limit = filter?.limit || LIMIT;
-    const page = filter?.page || PAGE;
+    const limit = filter.limit || LIMIT;
+    const page = filter.page || PAGE;
     const offset = (page - 1) * limit;
     const query = Object.fromEntries(
       Object.entries(filter).filter(

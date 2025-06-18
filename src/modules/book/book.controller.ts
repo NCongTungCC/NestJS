@@ -14,8 +14,8 @@ export class BookController {
   constructor(private readonly bookService: BookService) {}
   @Get()
   async getBook(@Query() filter: any) {
-    const limit = filter?.limit || LIMIT;
-    const page = filter?.page || PAGE;
+    const limit = filter.limit || LIMIT;
+    const page = filter.page || PAGE;
     const offset = (page - 1) * limit;
     const query = Object.fromEntries(
       Object.entries(filter).filter(
