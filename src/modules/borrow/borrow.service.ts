@@ -80,8 +80,26 @@ export class BorrowService {
     });
     return {
       statusCode: 200,
-      message: 'Borrow returned successfully',
+      message: 'Borrow approved successfully',
       data: borrow,
+    };
+  }
+
+  async getBorrowedBooks(userId: number, limit: number, offset: number) {
+    const books = await this.borrowRepository.find({
+      where: { userId, status: 'unreturned' },
+      relations: ['book'],
+      take: limit,
+      skip: offset,
+      order: { borrowDate: 'DESC' },
+    });
+    if (!books || books.length === 0)
+      throw new NotFoundException('No borrowed books found');
+
+    return {
+      statusCode: 200,
+      message: 'Borrowed books retrieved successfully',
+      data: books,
     };
   }
 }

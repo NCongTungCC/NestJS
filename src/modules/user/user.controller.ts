@@ -12,24 +12,29 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/CreateUserDto';
 import { UpdateUserDto } from './dto/UpdateUserDto';
 import { ALLOWED_USER, LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
-import { PromiseGuard } from 'src/common/guard/promise.guard';
+import { RolesGuard } from 'src/common/guard/promise.guard';
+import { Roles } from 'src/common/guard/role.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @Post()
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
   @Delete(':id')
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async deleteUser(@Param('id') id: number) {
     return this.userService.deleteUser(id);
   }
 
   @Put(':id')
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,

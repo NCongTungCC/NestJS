@@ -3,8 +3,9 @@ import { BookService } from './book.service';
 import { Post, Body, Get, Query, Put, Param } from '@nestjs/common';
 import { CreateBookDto } from './dto/CreateBookDto';
 import { ALLOWED_BOOK, LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
-import { PromiseGuard } from 'src/common/guard/promise.guard';
+import { RolesGuard } from 'src/common/guard/promise.guard';
 import { UpdateBookDto } from './dto/UpdateBookDto';
+import { Roles } from 'src/common/guard/role.decorator';
 
 @Controller({
   path: 'books',
@@ -31,13 +32,15 @@ export class BookController {
   }
 
   @Post()
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async createBook(@Body() createBookDto: CreateBookDto) {
     return this.bookService.createBook(createBookDto);
   }
 
   @Put(':id')
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async updateBook(
     @Param('id') id: number,
     @Body() updateBookDto: UpdateBookDto,
@@ -46,7 +49,8 @@ export class BookController {
   }
 
   @Delete(':id')
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
   }

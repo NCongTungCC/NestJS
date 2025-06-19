@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { Borrow } from './entities/borrow.entity';
 import * as cron from 'node-cron';
+import { sendOverdueBooksEmail } from 'src/common/ultis/sendEmail.ulti';
 
 @Injectable()
 export class SetupDueBookService {
@@ -12,8 +13,9 @@ export class SetupDueBookService {
     @InjectRepository(Borrow)
     private readonly borrowRepository: Repository<Borrow>,
   ) {
-    cron.schedule('0 30 11 * * 1-5', async () => {
+    cron.schedule('0 */30 9-17 * * *', async () => {
       await this.updateStatusBorrow();
+      await this.sendOverdueBooksEmail();
     });
   }
 
@@ -24,5 +26,26 @@ export class SetupDueBookService {
       { status: 'overdue' },
     );
     this.logger.log(`Updated ${result.affected} borrow records to overdue`);
+  }
+
+  async sendOverdueBooksEmail() {
+    const overdueBooks = await this.borrowRepository.find({
+      where: { status: 'overdue' },
+      relations: ['book', 'user'],
+    });
+
+    if (overdueBooks.length === 0) return;
+    for (const borrow of overdueBooks) {
+      await sendOverdueBooksEmail({
+        to: borrow.user.email,
+        userName: borrow.user.name,
+        books: [
+          {
+            title: borrow.book.title,
+            dueDate: borrow.dueDate,
+          },
+        ],
+      });
+    }
   }
 }

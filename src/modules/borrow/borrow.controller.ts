@@ -1,7 +1,18 @@
-import { Controller, Post, Req, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  Param,
+  Put,
+  UseGuards,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { BorrowService } from './borrow.service';
 import { Request } from 'express';
-import { PromiseGuard } from 'src/common/guard/promise.guard';
+import { RolesGuard } from 'src/common/guard/promise.guard';
+import { Roles } from 'src/common/guard/role.decorator';
+import { LIMIT, PAGE } from 'src/common/ultis/constants.ulti';
 
 @Controller()
 export class BorrowController {
@@ -19,8 +30,18 @@ export class BorrowController {
   }
 
   @Put('borrows/:id/approve')
-  @UseGuards(PromiseGuard)
+  @Roles('admin', 'manager')
+  @UseGuards(RolesGuard)
   async approveBorrow(@Param('id') borrowId: number) {
     return this.borrowService.approveBorrow(borrowId);
+  }
+
+  @Get('books/borrowed')
+  async getBorrowedBooks(@Req() req: Request, @Query() query: any) {
+    const userId = req.user.id;
+    const limit = query.limit || LIMIT;
+    const page = query.page || PAGE;
+    const offset = (page - 1) * limit;
+    return this.borrowService.getBorrowedBooks(userId, limit, offset);
   }
 }
