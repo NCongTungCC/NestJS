@@ -8,6 +8,7 @@ import {
 import { IsNotEmpty } from 'class-validator';
 import { Token } from 'src/modules/auth/entities/token.entity';
 import { Role, Gender } from '../../../common/ultis/constants.ulti';
+import { Borrow } from 'src/modules/borrow/entities/borrow.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -40,4 +41,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Token, (token) => token.userId)
   tokens!: Token[];
+
+  @OneToMany(() => Borrow, (borrow) => borrow.userId, {
+    cascade: true,
+  })
+  borrowedBooks: Borrow[];
 }

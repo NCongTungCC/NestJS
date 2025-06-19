@@ -1,8 +1,10 @@
+import { Borrow } from 'src/modules/borrow/entities/borrow.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -41,4 +43,9 @@ export class Book extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  @OneToMany(() => Borrow, (borrow) => borrow.bookId, {
+    cascade: true,
+  })
+  borrowedBooks: Borrow[];
 }

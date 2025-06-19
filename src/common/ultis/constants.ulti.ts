@@ -14,3 +14,4 @@ export const Gender = {
 
 export const ALLOWED_BOOK = ['title', 'author', 'year'];
 export const ALLOWED_USER = ['name', 'email', 'role'];
+export const STATUS_BORROW = ['pending', 'unreturned', 'overdue', 'returned'];
